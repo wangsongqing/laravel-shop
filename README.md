@@ -38,5 +38,6 @@
  4. 执行数据库迁移命令：php artisan migrate
  5. 后台访问地址 {项目地址}/admin
  6. 后台登录用户名:admin 密码:admin
- 7. 数据填充:php artisan db:seed --class=ProductsSeeder
+ 7. 执行数据填充:php artisan db:seed --class=ProductsSeeder
  8. 如果是本测试的话可以用 mailhog 来代替邮箱服务
+ 9. 执行软链接命令: php artisan storage:link
