@@ -41,3 +41,4 @@
  7. 执行数据填充:php artisan db:seed --class=ProductsSeeder
  8. 如果是本测试的话可以用 mailhog 来代替邮箱服务
  9. 执行软链接命令: php artisan storage:link
+ 10. 执行前端命令: npm install
