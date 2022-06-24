@@ -40,6 +40,8 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('payment/{order}/alipay', 'PaymentController@payByAlipay')->name('payment.alipay');
 
     Route::get('payment/alipay/return', 'PaymentController@alipayReturn')->name('payment.alipay.return');
+    Route::get('payment/paypal/pay/{order}', 'PaypalController@pay')->name('payment.paypal.pay');
+    Route::get('paypal/callback', 'PaypalController@callback')->name('payment.paypal.callback');
 });
 
 Route::get('products/{product}', 'ProductsController@show')->name('products.show');
