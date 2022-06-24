@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Events\OrderPaid;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductSku;
@@ -142,6 +143,9 @@ class PaypalController extends Controller
             'payment_no'     => $paymentId, // PayPal订单号
         ]);
         $order->save();
+
+        // 添加事件
+        event(new OrderPaid($order));
 
         $url = 'http://laravel-shop.org/orders/' . $order->id;
         header("Location: {$url}");
