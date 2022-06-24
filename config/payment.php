@@ -1,8 +1,8 @@
 <?php
 return [
     'paypal' => [
-        'client_id' => 'ARwMa5uyetqIQvcjlCrbduEsdzKPxL-xPbG6TtlwntHO2JxIucH8trFiw1NKOflsEXeNF1zABXppwJzv',
-        'secret'    => 'EIkRvnOwKwAI5EvmvYao1kWEPIIYzBv6hIzthew5XfmSSgfjID-D0BCaNbgaq_SfFhncbduVX5XS1en8',
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'secret'    => env('PAYPAL_SCERET'),
         'settings'  => array(
             'mode'                   => 'sandbox',
             'http.ConnectionTimeOut' => 1000,

@@ -26,8 +26,6 @@ use PayPal\Api\PaymentExecution;
 
 class PaypalController extends Controller
 {
-    const clientId = 'ARwMa5uyetqIQvcjlCrbduEsdzKPxL-xPbG6TtlwntHO2JxIucH8trFiw1NKOflsEXeNF1zABXppwJzv';//应用Client ID
-    const clientSecret = 'EIkRvnOwKwAI5EvmvYao1kWEPIIYzBv6hIzthew5XfmSSgfjID-D0BCaNbgaq_SfFhncbduVX5XS1en8';//Secret
     const accept_url = 'http://laravel-shop.org/paypal/callback'; //支付成功和取消交易的跳转地址
     const Currency = 'USD';//货币单位
 
@@ -37,8 +35,8 @@ class PaypalController extends Controller
     {
         $this->PayPal = new ApiContext(
             new OAuthTokenCredential(
-                self::clientId,
-                self::clientSecret
+                config('payment.paypal.client_id'),
+                config('payment.paypal.secret'),
             )
         );
         //如果是沙盒测试环境不设置，请注释掉
