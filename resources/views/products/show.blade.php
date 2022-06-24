@@ -48,17 +48,41 @@
                     <div class="product-detail">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" href="#product-detail-tab" aria-controls="product-detail-tab" role="tab" data-toggle="tab" aria-selected="true">商品详情</a>
+                                <a class="nav-link active" href="#product-reviews-tab" aria-controls="product-reviews-tab" role="tab" data-toggle="tab" aria-selected="true">用户评价</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#product-reviews-tab" aria-controls="product-reviews-tab" role="tab" data-toggle="tab" aria-selected="false">用户评价</a>
+                                <a class="nav-link" href="#product-detail-tab" aria-controls="product-detail-tab" role="tab" data-toggle="tab" aria-selected="false">商品详情</a>
                             </li>
                         </ul>
                         <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane active" id="product-detail-tab">
+                            <div role="tabpanel" class="tab-pane" id="product-detail-tab">
                                 {!! $product->description !!}
                             </div>
-                            <div role="tabpanel" class="tab-pane" id="product-reviews-tab">
+                            <div role="tabpanel" class="tab-pane active" id="product-reviews-tab">
+                                <!-- 评论列表开始 -->
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <td>用户</td>
+                                        <td>商品</td>
+                                        <td>评分</td>
+                                        <td>评价</td>
+                                        <td>时间</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($reviews as $review)
+                                        <tr>
+                                            <td>{{ $review->order->user->name }}</td>
+                                            <td>{{ $review->productSku->title }}</td>
+                                            <td>{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</td>
+                                            <td>{{ $review->review }}</td>
+                                            <td>{{ $review->reviewed_at->format('Y-m-d H:i') }}</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                                <!-- 评论列表结束 -->
                             </div>
                         </div>
                     </div>
@@ -77,6 +101,7 @@
                 $('.product-info .stock').text('库存：' + $(this).data('stock') + '件');
             });
 
+            // 监听收藏按钮的点击事件
             $('.btn-favor').click(function () {
                 axios.post('{{ route('products.favor', ['product' => $product->id]) }}')
                     .then(function () {
@@ -110,13 +135,14 @@
 
                 // 请求加入购物车接口
                 axios.post('{{ route('cart.add') }}', {
-                    sku_id: $('.sku-btn input[name=skus]:checked').val(),
+                    sku_id: $('label.active input[name=skus]').val(),
                     amount: $('.cart_amount input').val(),
                 })
-                    .then(function () { // 请求成功执行此回调
-                        swal('加入购物车成功', '', 'success').then(function() {
-                            location.href = '{{ route('cart.index') }}';
-                        });;
+                    .then(function () {
+                        swal('加入购物车成功', '', 'success')
+                            .then(function() {
+                                location.href = '{{ route('cart.index') }}';
+                            });
                     }, function (error) { // 请求失败执行此回调
                         if (error.response.status === 401) {
 
@@ -141,6 +167,8 @@
                         }
                     })
             });
+
+
         });
     </script>
 @endsection
