@@ -15,3 +15,29 @@ function ngrok_url($routeName, $parameters = [])
 
     return route($routeName, $parameters);
 }
+
+function object_to_array($obj) {
+
+    $arr = (array)$obj;
+
+    foreach ($arr as $k => $v) {
+
+        if (gettype($v) == 'resource') {
+
+            return;
+
+        }
+
+        if (gettype($v) == 'object' || gettype($v) == 'array') {
+
+            $arr[$k] = (array)object_to_array($v);
+
+        }
+
+    }
+
+
+
+    return $arr;
+
+}

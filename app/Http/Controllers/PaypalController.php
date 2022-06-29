@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Events\OrderPaid;
 use App\Models\Order;
+use App\Models\PaypalCallBack;
 use App\Models\Product;
 use App\Models\ProductSku;
 use Illuminate\Http\Request;
@@ -139,6 +140,7 @@ class PaypalController extends Controller
             'paid_at'        => Carbon::now(), // 支付时间
             'payment_method' => 'paypal', // 支付方式
             'payment_no'     => $paymentId, // PayPal订单号
+            'payer_id'       => $PayerID
         ]);
         $order->save();
 
@@ -147,5 +149,37 @@ class PaypalController extends Controller
 
         $url = 'http://laravel-shop.org/orders/' . $order->id;
         header("Location: {$url}");
+    }
+
+
+    public function callbackPaypal(Request $request)
+    {
+        $payment = Payment::get('PAYID-MK2TGWA1TM19766NJ991174M', $this->PayPal, null, false);
+        echo '<pre>';
+        // print_r(object_to_array($payment));
+        $a = $payment->transactions;
+        $id = '';
+       foreach ($a as $v) {
+           foreach ($v->related_resources as $k) {
+               if (isset($k->sale)) {
+                   $id = $k->sale->id ?? '';
+               }
+           }
+       }
+
+       var_dump($id);
+        exit();
+        $time = date('Y-m-d H:i:s');
+        $data = [
+            'callback_request'=> json_encode($request->all()),
+            'created_at' => $time,
+            'updated_at' => $time
+        ];
+
+        $lastId = PaypalCallBack::query()->insertGetId($data);
+        return response()->json([
+            'code'    => 1,
+            'message' => 'success'
+        ]);
     }
 }

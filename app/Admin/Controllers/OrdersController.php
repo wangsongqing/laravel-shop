@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\Admin\HandleRefundRequest;
 use App\Models\Order;
@@ -10,10 +11,31 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use PayPal\Api\Amount;
+use PayPal\Api\Payment;
+use PayPal\Api\Refund;
+use PayPal\Api\Sale;
+use PayPal\Auth\OAuthTokenCredential;
+use PayPal\Rest\ApiContext;
 
 class OrdersController extends AdminController
 {
     use ValidatesRequests;
+
+    /**
+     * @var ApiContext
+     */
+    protected $PayPal;
+
+    public function __construct()
+    {
+        $this->PayPal = new ApiContext(
+            new OAuthTokenCredential(
+                config('payment.paypal.client_id'),
+                config('payment.paypal.secret'),
+            )
+        );
+    }
 
     protected $title = '订单';
 
@@ -29,10 +51,10 @@ class OrdersController extends AdminController
         $grid->column('user.name', '买家');
         $grid->total_amount('总金额')->sortable();
         $grid->paid_at('支付时间')->sortable();
-        $grid->ship_status('物流')->display(function($value) {
+        $grid->ship_status('物流')->display(function ($value) {
             return Order::$shipStatusMap[$value];
         });
-        $grid->refund_status('退款状态')->display(function($value) {
+        $grid->refund_status('退款状态')->display(function ($value) {
             return Order::$refundStatusMap[$value];
         });
         // 禁用创建按钮，后台不需要创建订单
@@ -99,11 +121,17 @@ class OrdersController extends AdminController
 
         // 是否同意退款
         if ($request->input('agree')) {
-            // 同意退款的逻辑这里先留空
-            // todo
+            // 清空拒绝退款理由
+            $extra = $order->extra ?: [];
+            unset($extra['refund_disagree_reason']);
+            $order->update([
+                'extra' => $extra,
+            ]);
+            // 调用退款逻辑
+            $this->_refundOrder($order);
         } else {
             // 将拒绝退款理由放到订单的 extra 字段中
-            $extra = $order->extra ?: [];
+            $extra                           = $order->extra ?: [];
             $extra['refund_disagree_reason'] = $request->input('reason');
             // 将订单的退款状态改为未退款
             $order->update([
@@ -113,5 +141,76 @@ class OrdersController extends AdminController
         }
 
         return $order;
+    }
+
+    private function _refundOrder(Order $order)
+    {
+        // 判断该订单的支付方式
+        switch ($order->payment_method) {
+            case 'wechat':
+                // 微信的先留空
+                // todo
+                break;
+            case 'alipay':
+                // 支付宝退款
+                break;
+            case 'paypal':
+                // PayPal 退款
+                // 用我们刚刚写的方法来生成一个退款订单号
+                $refundNo = Order::getAvailableRefundNo();
+
+                // 将订单的退款状态标记为退款成功并保存退款订单号
+                try {
+                    $payment = Payment::get($order->payment_no, $this->PayPal);
+                    $a = $payment->transactions;
+                    $txn_id = '';
+                    foreach ($a as $v) {
+                        foreach ($v->related_resources as $k) {
+                            if (isset($k->sale)) {
+                                $txn_id = $k->sale->id ?? '';
+                            }
+                        }
+                    }
+
+                    if (!$txn_id) {
+                        throw new \Exception('退款失败', -1);
+                    }
+
+                    $amt    = new Amount();
+
+                    $amt->setCurrency('USD')->setTotal($order->total_amount);  // 退款的费用
+
+                    $refund = new Refund();
+                    $refund->setAmount($amt);
+
+                    $sale = new Sale();
+                    $sale->setId($txn_id);
+
+                    $refundedSale = $sale->refund($refund, $this->PayPal);
+
+                    $order->update([
+                        'refund_no'     => $txn_id,
+                        'refund_status' => Order::REFUND_STATUS_SUCCESS,
+                    ]);
+                    // print_r('refundedSale:'.$refundedSale);
+
+                } catch (\Exception $e) {
+                    // print_r('Message:'.$e->getMessage());
+                    // PayPal无效退款
+                    $extra                       = $order->extra;
+                    $extra['refund_failed_code'] = $e->getCode();
+                    // 将订单的退款状态标记为退款失败
+                    $order->update([
+                        'refund_no'     => $refundNo,
+                        'refund_status' => Order::REFUND_STATUS_FAILED,
+                        'extra'         => $extra,
+                    ]);
+                }
+                break;
+            default:
+                // 原则上不可能出现，这个只是为了代码健壮性
+                throw new InternalException('未知订单支付方式：' . $order->payment_method);
+                break;
+        }
     }
 }

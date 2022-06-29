@@ -48,17 +48,18 @@
                     <div class="product-detail">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" href="#product-reviews-tab" aria-controls="product-reviews-tab" role="tab" data-toggle="tab" aria-selected="true">用户评价</a>
+                                <a class="nav-link active" href="#product-detail-tab" aria-controls="product-detail-tab" role="tab" data-toggle="tab" aria-selected="true">商品详情</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#product-detail-tab" aria-controls="product-detail-tab" role="tab" data-toggle="tab" aria-selected="false">商品详情</a>
+                                <a class="nav-link" href="#product-reviews-tab" aria-controls="product-reviews-tab" role="tab" data-toggle="tab" aria-selected="false">用户评价</a>
                             </li>
+
                         </ul>
                         <div class="tab-content">
-                            <div role="tabpanel" class="tab-pane" id="product-detail-tab">
+                            <div role="tabpanel" class="tab-pane active" id="product-detail-tab">
                                 {!! $product->description !!}
                             </div>
-                            <div role="tabpanel" class="tab-pane active" id="product-reviews-tab">
+                            <div role="tabpanel" class="tab-pane" id="product-reviews-tab">
                                 <!-- 评论列表开始 -->
                                 <table class="table table-bordered table-striped">
                                     <thead>
@@ -135,7 +136,7 @@
 
                 // 请求加入购物车接口
                 axios.post('{{ route('cart.add') }}', {
-                    sku_id: $('label.active input[name=skus]').val(),
+                    sku_id: $('input[name=skus]').val(),
                     amount: $('.cart_amount input').val(),
                 })
                     .then(function () {
