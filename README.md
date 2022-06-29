@@ -41,4 +41,12 @@
  7. 执行数据填充:php artisan db:seed --class=ProductsSeeder
  8. 如果是本测试的话可以用 mailhog 来代替邮箱服务
  9. 执行软链接命令: php artisan storage:link
- 10. 执行前端命令: npm install
+ 10. 执行前端命令
+     ```
+     yarn config set registry https://registry.npm.taobao.org
+     SASS_BINARY_SITE=http://npm.taobao.org/mirrors/node-sass yarn
+     yarn dev
+     ```
+ 11. 导入管理后台数据: php artisan db:seed --class=AdminTablesSeeder
+ 12. 创建后台用户: php artisan admin:create-user
+     
