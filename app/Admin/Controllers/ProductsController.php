@@ -26,7 +26,7 @@ class ProductsController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Product);
-
+        $grid->model()->where('type', Product::TYPE_NORMAL)->with(['category']);
         // 使用 with 来预加载商品类目数据，减少 SQL 查询
         $grid->model()->with(['category']);
 
@@ -36,6 +36,7 @@ class ProductsController extends AdminController
         $grid->on_sale('已上架')->display(function ($value) {
             return $value ? '是' : '否';
         });
+
         $grid->price('价格');
         $grid->rating('评分');
         $grid->sold_count('销量');
@@ -88,7 +89,8 @@ class ProductsController extends AdminController
     protected function form()
     {
         $form = new Form(new Product);
-
+        // 在表单中添加一个名为 type，值为 Product::TYPE_NORMAL 的隐藏字段
+        $form->hidden('type')->value(Product::TYPE_NORMAL);
         // 创建一个输入框，第一个参数 title 是模型的字段名，第二个参数是该字段描述
         $form->text('title', '商品名称')->rules('required');
 
