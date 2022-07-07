@@ -15,7 +15,7 @@
                 <!-- 判断模板是否有 $categoryTree 变量 -->
                 @if(isset($categoryTree))
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" aria-haspopup="true" aria-expanded="false" id="categoryTree">所有类目 <b class="caret"></b></a>
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="categoryTree">所有类目 <b class="caret"></b></a>
                         <ul class="dropdown-menu" aria-labelledby="categoryTree">
                             <!-- 遍历 $categoryTree 集合，将集合中的每一项以 $category 变量注入 layouts._category_item 模板中并渲染 -->
                             @each('layouts._category_item', $categoryTree, 'category')
