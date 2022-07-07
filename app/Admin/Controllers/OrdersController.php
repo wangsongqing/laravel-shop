@@ -6,6 +6,7 @@ use App\Exceptions\InternalException;
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\Admin\HandleRefundRequest;
 use App\Models\Order;
+use App\Services\OrderService;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -118,7 +119,7 @@ class OrdersController extends AdminController
         return redirect()->back();
     }
 
-    public function handleRefund(Order $order, HandleRefundRequest $request)
+    public function handleRefund(Order $order, HandleRefundRequest $request, OrderService $orderService)
     {
         // 判断订单状态是否正确
         if ($order->refund_status !== Order::REFUND_STATUS_APPLIED) {
@@ -134,7 +135,7 @@ class OrdersController extends AdminController
                 'extra' => $extra,
             ]);
             // 调用退款逻辑
-            $this->_refundOrder($order);
+            $orderService->refundOrder($order);
         } else {
             // 将拒绝退款理由放到订单的 extra 字段中
             $extra                           = $order->extra ?: [];
@@ -147,76 +148,5 @@ class OrdersController extends AdminController
         }
 
         return $order;
-    }
-
-    private function _refundOrder(Order $order)
-    {
-        // 判断该订单的支付方式
-        switch ($order->payment_method) {
-            case 'wechat':
-                // 微信的先留空
-                // todo
-                break;
-            case 'alipay':
-                // 支付宝退款
-                break;
-            case 'paypal':
-                // PayPal 退款
-                // 用我们刚刚写的方法来生成一个退款订单号
-                $refundNo = Order::getAvailableRefundNo();
-
-                // 将订单的退款状态标记为退款成功并保存退款订单号
-                try {
-                    $payment = Payment::get($order->payment_no, $this->PayPal);
-                    $a = $payment->transactions;
-                    $txn_id = '';
-                    foreach ($a as $v) {
-                        foreach ($v->related_resources as $k) {
-                            if (isset($k->sale)) {
-                                $txn_id = $k->sale->id ?? '';
-                            }
-                        }
-                    }
-
-                    if (!$txn_id) {
-                        throw new \Exception('退款失败', -1);
-                    }
-
-                    $amt    = new Amount();
-
-                    $amt->setCurrency('USD')->setTotal($order->total_amount);  // 退款的费用
-
-                    $refund = new Refund();
-                    $refund->setAmount($amt);
-
-                    $sale = new Sale();
-                    $sale->setId($txn_id);
-
-                    $refundedSale = $sale->refund($refund, $this->PayPal);
-
-                    $order->update([
-                        'refund_no'     => $txn_id,
-                        'refund_status' => Order::REFUND_STATUS_SUCCESS,
-                    ]);
-                    // print_r('refundedSale:'.$refundedSale);
-
-                } catch (\Exception $e) {
-                    // print_r('Message:'.$e->getMessage());
-                    // PayPal无效退款
-                    $extra                       = $order->extra;
-                    $extra['refund_failed_code'] = $e->getCode();
-                    // 将订单的退款状态标记为退款失败
-                    $order->update([
-                        'refund_no'     => $refundNo,
-                        'refund_status' => Order::REFUND_STATUS_FAILED,
-                        'extra'         => $extra,
-                    ]);
-                }
-                break;
-            default:
-                // 原则上不可能出现，这个只是为了代码健壮性
-                throw new InternalException('未知订单支付方式：' . $order->payment_method);
-                break;
-        }
     }
 }
