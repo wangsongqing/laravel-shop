@@ -36,6 +36,8 @@ class ProductFactory extends Factory
             'sold_count'   => 0,
             'review_count' => 0,
             'price'        => 0,
+            // 将取出的类目 ID 赋给 category_id 字段
+            // 如果数据库中没有类目则 $category 为 null，同样 category_id 也设成 null
             'category_id'  => $category ? $category->id : null,
         ];
     }

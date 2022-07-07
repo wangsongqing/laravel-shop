@@ -53,7 +53,7 @@ class CategoriesController extends AdminController
             // 不允许用户修改『是否目录』和『父类目』字段的值
             // 用 display() 方法来展示值，with() 方法接受一个匿名函数，会把字段值传给匿名函数并把返回值展示出来
             $form->display('is_directory', '是否目录')->with(function ($value) {
-                return $value ? '是' :'否';
+                return $value ? '是' : '否';
             });
             // 支持用符号 . 来展示关联关系的字段
             $form->display('parent.name', '父类目');
