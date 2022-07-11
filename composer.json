@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "ext-json": "*",
         "encore/laravel-admin": "1.8.11",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -14,10 +15,10 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.0",
+        "moontoast/math": "^1.2",
         "overtrue/laravel-lang": "^2.1",
         "paypal/rest-api-sdk-php": "^1.14",
-        "yansongda/pay": "2.10.2",
-      "ext-json": "*"
+        "yansongda/pay": "2.10.2"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
