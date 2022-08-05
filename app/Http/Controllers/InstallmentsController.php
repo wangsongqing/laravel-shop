@@ -176,7 +176,7 @@ class InstallmentsController extends Controller
             // 更新对应的还款计划
             $item->update([
                 'paid_at'        => Carbon::now(), // 支付时间
-                'payment_method' => 'alipay', // 支付方式
+                'payment_method' => 'paypal', // 支付方式
                 'payment_no'     => $paymentId, // 支付宝订单号
             ]);
 
