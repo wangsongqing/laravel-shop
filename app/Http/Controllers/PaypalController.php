@@ -27,7 +27,7 @@ use PayPal\Api\PaymentExecution;
 
 class PaypalController extends Controller
 {
-    const accept_url = 'http://laravel-shop.org/paypal/callback'; //支付成功和取消交易的跳转地址
+    // const accept_url = 'http://laravelshop.test/paypal/callback'; //支付成功和取消交易的跳转地址
     const Currency = 'USD';//货币单位
 
     protected $PayPal;
@@ -88,7 +88,7 @@ class PaypalController extends Controller
         $transaction->setAmount($amount)->setItemList($itemList)->setDescription($description)->setInvoiceNumber(uniqid());
 
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl(self::accept_url . '?success=true&order_id=' . $order->no)->setCancelUrl(self::accept_url . '/?success=false&order_id=' . $order->no);
+        $redirectUrls->setReturnUrl(config('pay.paypal.callback') . '?success=true&order_id=' . $order->no)->setCancelUrl(config('pay.paypal.callback') . '/?success=false&order_id=' . $order->no);
 
         $payment = new Payment();
         $payment->setIntent('sale')->setPayer($payer)->setRedirectUrls($redirectUrls)->setTransactions([$transaction]);
@@ -147,7 +147,7 @@ class PaypalController extends Controller
         // 添加事件
         event(new OrderPaid($order));
 
-        $url = 'http://laravel-shop.org/orders/' . $order->id;
+        $url = env('APP_URL').'/orders/' . $order->id;
         header("Location: {$url}");
     }
 

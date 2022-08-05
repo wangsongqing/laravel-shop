@@ -20,4 +20,8 @@ return [
             'file' => storage_path('logs/wechat_pay.log'),
         ],
     ],
+    'paypal' => [
+        'callback'              => env('APP_URL') . '/paypal/callback',
+        'callback_installments' => env('APP_URL') . '/paypal/pay/installments_callback', // 分期回调
+    ]
 ];

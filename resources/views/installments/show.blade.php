@@ -52,8 +52,9 @@
                                     <div class="value">{{ $nextItem->due_date->format('Y-m-d') }}</div>
                                 </div>
                                 <div class="payment-buttons">
-                                    <a class="btn btn-primary btn-sm" href="">支付宝支付</a>
-                                    <button class="btn btn-sm btn-success" id='btn-wechat'>微信支付</button>
+                                    <a class="btn btn-primary btn-sm" href="{{ route('installments.paypal', ['installment' => $installment->id]) }}">PayPal支付</a>
+{{--                                    <button class="btn btn-sm btn-success" id='btn-wechat'>微信支付</button>--}}
+{{--                                    <button class="btn btn-sm btn-success" id='btn-wechat'>PayPal支付</button>--}}
                                 </div>
                             @endif
                         </div>
