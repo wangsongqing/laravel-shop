@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Services\CategoryService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\SearchBuilders\ProductSearchBuilder;
+use App\Services\ProductService;
 
 class ProductsController extends Controller
 {
@@ -63,11 +64,7 @@ class ProductsController extends Controller
         // 通过 collect 函数将返回结果转为集合，并通过集合的 pluck 方法取到返回的商品 ID 数组
         $productIds = collect($result['hits']['hits'])->pluck('_id')->all();
         // 通过 whereIn 方法从数据库中读取商品数据
-        $products = Product::query()
-            ->whereIn('id', $productIds)
-            // orderByRaw 可以让我们用原生的 SQL 来给查询结果排序
-            ->orderByRaw(sprintf("FIND_IN_SET(id, '%s')", join(',', $productIds)))
-            ->get();
+        $products = Product::query()->byIds($productIds)->get();
         // 返回一个 LengthAwarePaginator 对象
         $pager = new LengthAwarePaginator($products, $result['hits']['total']['value'], $perPage, $page, [
             'path' => route('products.index', false), // 手动构建分页的 url
@@ -104,7 +101,7 @@ class ProductsController extends Controller
     }
 
 
-    public function show(Product $product, Request $request)
+    public function show(Product $product, Request $request, ProductService $service)
     {
         // 判断商品是否已经上架，如果没有上架则抛出异常。
         if (!$product->on_sale) {
@@ -119,6 +116,9 @@ class ProductsController extends Controller
             $favored = boolval($user->favoriteProducts()->find($product->id));
         }
 
+        $similarProductIds = $service->getSimilarProductIds($product, 4);
+        $similarProducts   = Product::query()->byIds($similarProductIds)->get();
+
         $reviews = OrderItem::query()
             ->with(['order.user', 'productSku']) // 预先加载关联关系
             ->where('product_id', $product->id)
@@ -128,10 +128,12 @@ class ProductsController extends Controller
             ->get();
 
         // 最后别忘了注入到模板中
+        // 最后别忘了注入到模板中
         return view('products.show', [
             'product' => $product,
             'favored' => $favored,
-            'reviews' => $reviews
+            'reviews' => $reviews,
+            'similar' => $similarProducts,
         ]);
     }
 
