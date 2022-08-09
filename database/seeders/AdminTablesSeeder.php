@@ -129,6 +129,14 @@ class AdminTablesSeeder extends Seeder
                     "permission" => NULL,
                     "title" => "普通商品",
                     "uri" => "/products"
+                ],
+                [
+                    "icon" => "fa-bars",
+                    "order" => 0,
+                    "parent_id" => 9,
+                    "permission" => NULL,
+                    "title" => "秒杀商品",
+                    "uri" => "/seckill_products"
                 ]
             ]
         );
