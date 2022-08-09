@@ -53,6 +53,8 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('installments', 'InstallmentsController@index')->name('installments.index');
     Route::get('installments/{installment}', 'InstallmentsController@show')->name('installments.show');
     Route::get('installments/{installment}/paypal', 'InstallmentsController@payByPayPal')->name('installments.paypal');
+
+    Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
 });
 
 Route::get('products/{product}', 'ProductsController@show')->name('products.show');
