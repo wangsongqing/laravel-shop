@@ -404,6 +404,7 @@
                     content: addressSelector[0],
                     buttons: ['取消', '确定']
                 }).then(function (ret) {
+                    // 如果用户没有点确定按钮，则什么也不做
                     if (!ret) {
                         return;
                     }
@@ -412,8 +413,33 @@
                     var req = {
                         // 将地址对象中的字段放入 address 参数
                         address: _.pick(address, ['province','city','district','address','zip','contact_name','contact_phone']),
-                        sku_id: $('label.active input[name=skus]').val()
+                        sku_id: $('input[name=skus]').val()
                     };
+                    // 调用秒杀商品下单接口
+                    axios.post('{{ route('seckill_orders.store') }}', req)
+                        .then(function (response) {
+                            swal('订单提交成功', '', 'success')
+                                .then(() => {
+                                    location.href = '/orders/' + response.data.id;
+                                });
+                        }, function (error) {
+                            // 输入参数校验失败，展示失败原因
+                            if (error.response.status === 422) {
+                                var html = '<div>';
+                                _.each(error.response.data.errors, function (errors) {
+                                    _.each(errors, function (error) {
+                                        html += error+'<br>';
+                                    })
+                                });
+                                html += '</div>';
+                                swal({content: $(html)[0], icon: 'error'})
+                            } else if (error.response.status === 403) {
+                                swal(error.response.data.msg, '', 'error');
+                            } else {
+                                swal('系统错误', '', 'error');
+                            }
+                        });
+                });
             });
 
         });
