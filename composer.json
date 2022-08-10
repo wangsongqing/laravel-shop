@@ -19,7 +19,8 @@
         "moontoast/math": "^1.2",
         "overtrue/laravel-lang": "^2.1",
         "paypal/rest-api-sdk-php": "^1.14",
-        "yansongda/pay": "2.10.2"
+        "yansongda/pay": "2.10.2",
+      "ext-redis": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

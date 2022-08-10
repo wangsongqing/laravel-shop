@@ -13,6 +13,7 @@ use App\Models\ProductSku;
 use App\Exceptions\InvalidRequestException;
 use App\Jobs\CloseOrder;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 use PayPal\Api\Amount;
 use PayPal\Api\Payment;
 use PayPal\Api\Refund;
@@ -267,6 +268,8 @@ class OrderService
             $item->product()->associate($sku->product_id);
             $item->productSku()->associate($sku);
             $item->save();
+
+            Redis::decr('seckill_sku_'.$sku->id);
 
             return $order;
         });

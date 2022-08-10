@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/products')->name('root');
 Route::get('products', 'ProductsController@index')->name('products.index');
 
+Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
+
 // 在之前的路由里加上一个 verify 参数
 Auth::routes(['verify' => true]);
 
@@ -54,7 +56,7 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('installments/{installment}', 'InstallmentsController@show')->name('installments.show');
     Route::get('installments/{installment}/paypal', 'InstallmentsController@payByPayPal')->name('installments.paypal');
 
-    Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
+    Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store')->middleware('random_drop:50');
 });
 
 Route::get('products/{product}', 'ProductsController@show')->name('products.show');
