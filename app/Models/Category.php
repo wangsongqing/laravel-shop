@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory;
+
+    const IS_DIRECTORY_FALSE = 0;
+    const IS_DIRECTORY_TRUE = 1;
+    const IS_DIRECTORY = [
+        self::IS_DIRECTORY_FALSE => '否',
+        self::IS_DIRECTORY_TRUE => '是'
+    ];
     protected $fillable = ['name', 'is_directory', 'level', 'path'];
     protected $casts = [
         'is_directory' => 'boolean',

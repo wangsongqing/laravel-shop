@@ -20,6 +20,13 @@ class Product extends Model
         self::TYPE_SECKILL => '秒杀商品',
     ];
 
+    const ON_SALE_TRUE = 1;
+    const ON_SALE_FALSE = 0;
+    const ON_SALE = [
+        self::ON_SALE_TRUE => '上架',
+        self::ON_SALE_FALSE => '下架'
+    ];
+
     protected $fillable = [
         'title', 'description', 'image', 'on_sale',
         'rating', 'sold_count', 'review_count', 'price' , 'type',

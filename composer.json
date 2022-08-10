@@ -7,21 +7,29 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-json": "*",
+        "ext-redis": "*",
+        "awesome-nova/dependent-filter": "^1.1",
         "elasticsearch/elasticsearch": "~7.0",
         "encore/laravel-admin": "1.8.11",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "jxlwqq/quill": "1.0.2",
         "laravel/framework": "^8.75",
+        "laravel/nova": "^3.14",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.0",
         "moontoast/math": "^1.2",
         "overtrue/laravel-lang": "^2.1",
         "paypal/rest-api-sdk-php": "^1.14",
-        "yansongda/pay": "2.10.2",
-      "ext-redis": "*"
+        "yansongda/pay": "2.10.2"
     },
+    "repositories": [
+        {
+            "type": "gitlab",
+            "url": "https://git.papamk.com/public-project/nova"
+        }
+    ],
     "require-dev": {
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
