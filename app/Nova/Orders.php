@@ -3,27 +3,28 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\DateTime;
 
-class ProductSku extends Resource
+class Orders extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\ProductSku::class;
+    public static $model = \App\Models\Order::class;
 
-    public static $group = '商品管理';
+    public static $group = '订单管理';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = '普通管理';
+    public static $title = '订单管理';
 
     /**
      * The columns that should be searched.
@@ -31,11 +32,11 @@ class ProductSku extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'title',
+        'no',
     ];
 
     public static function label() {
-        return '商品sku管理';
+        return '订单管理';
     }
 
     /**
@@ -49,10 +50,22 @@ class ProductSku extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('sku名称', 'title'),
-            Text::make('sku描述', 'description'),
-            Text::make('单价', 'price'),
-            Text::make('剩余库存', 'stock'),
+            Text::make('订单流水号', 'no'),
+            Text::make('买家', function($model) {
+                $userInfo = \App\Models\User::query()->where('id', $model->user_id)->first();
+                return $userInfo->name ?? '';
+            }),
+            Text::make('总金额', 'total_amount'),
+            DateTime::make('支付时间', 'paid_at'),
+
+            Select::make('物流','ship_status')
+                ->options(\App\Models\Order::$shipStatusMap)
+                ->displayUsingLabels()->rules('required', 'max:255'),
+
+            Select::make('退款状态','refund_status')
+                ->options(\App\Models\Order::$refundStatusMap)
+                ->displayUsingLabels()->rules('required', 'max:255'),
+
         ];
     }
 

@@ -50,8 +50,6 @@ class ProductProperties extends Resource
         return [
             ID::make()->sortable(),
 
-            Gravatar::make()->maxWidth(50),
-
             Text::make('属性名称', 'name'),
             Text::make('属性值', 'value'),
         ];

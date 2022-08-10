@@ -17,6 +17,13 @@ class CouponCode extends Model
     const TYPE_FIXED = 'fixed';
     const TYPE_PERCENT = 'percent';
 
+    const ENABLE_TRUE = 1;
+    const ENABLE_FALSE = 0;
+    const ENABLE = [
+        self::ENABLE_TRUE => '启用',
+        self::ENABLE_FALSE => '停用'
+    ];
+
     public static $typeMap = [
         self::TYPE_FIXED   => '固定金额',
         self::TYPE_PERCENT => '比例',

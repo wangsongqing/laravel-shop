@@ -3,9 +3,7 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
 
 class SeckillProducts extends Resource
@@ -49,8 +47,6 @@ class SeckillProducts extends Resource
     {
         return [
             ID::make()->sortable(),
-
-            Gravatar::make()->maxWidth(50),
 
             DateTime::make('开始时间', 'start_at'),
             DateTime::make('结束时间', 'end_at'),

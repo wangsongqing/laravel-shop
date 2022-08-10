@@ -58,8 +58,6 @@ class CrowdfundingProducts extends Resource
         return [
             ID::make()->sortable(),
 
-            Gravatar::make()->maxWidth(50),
-
             Text::make('目标金额', 'target_amount'),
             Text::make('金额', 'total_amount'),
             Date::make('结束时间', 'end_at'),

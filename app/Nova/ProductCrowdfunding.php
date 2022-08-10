@@ -59,8 +59,6 @@ class ProductCrowdfunding extends Resource
         return [
             ID::make()->sortable(),
 
-            Gravatar::make()->maxWidth(50),
-
             Text::make('商品名称', 'title')
                 ->sortable()
                 ->rules('required', 'max:255'),

@@ -3,27 +3,29 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 
-class ProductSku extends Resource
+class CouponCodes extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\ProductSku::class;
+    public static $model = \App\Models\CouponCode::class;
 
-    public static $group = '商品管理';
+    public static $group = '优惠券管理';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = '普通管理';
+    public static $title = '优惠券管理';
 
     /**
      * The columns that should be searched.
@@ -35,7 +37,7 @@ class ProductSku extends Resource
     ];
 
     public static function label() {
-        return '商品sku管理';
+        return '优惠券管理';
     }
 
     /**
@@ -49,10 +51,29 @@ class ProductSku extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('sku名称', 'title'),
-            Text::make('sku描述', 'description'),
-            Text::make('单价', 'price'),
-            Text::make('剩余库存', 'stock'),
+            Text::make('名称', 'name')->rules('required'),
+            Text::make('优惠码', 'code')->rules('required'),
+            Text::make('描述', function ($model) {
+                return $model->getDescriptionAttribute() ?? '';
+            }),
+            Text::make('用量', function($model) {
+                return "{$model->used} / {$model->total}";
+            }),
+
+            Select::make('是否启用', 'enabled')
+                ->options(\App\Models\CouponCode::ENABLE)
+                ->displayUsingLabels()
+                ->rules('required', 'max:255'),
+
+            Select::make('类型', 'type')
+                ->options(\App\Models\CouponCode::$typeMap)
+                ->displayUsingLabels()
+                ->rules('required', 'max:255'),
+            Text::make('折扣', 'value')->rules('required'),
+            Text::make('最低金额', 'min_amount')->rules('required'),
+            DateTime::make('开始时间', 'not_before')->rules('required'),
+            DateTime::make('结束时间', 'not_after')->rules('required'),
+            DateTime::make('创建时间', 'created_at')
         ];
     }
 
