@@ -49,4 +49,5 @@
      ```
  11. 导入管理后台数据: php artisan db:seed --class=AdminTablesSeeder
  12. 创建后台用户: php artisan admin:create-user
+ 13. 测试邮件服务 直接启动:MailHog, 浏览器访问:http://127.0.0.1:8025/
      

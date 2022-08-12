@@ -8,6 +8,10 @@ use App\Listeners\SendOrderPaidMail;
 use App\Listeners\UpdateCrowdfundingProductProgress;
 use App\Listeners\UpdateProductRating;
 use App\Listeners\UpdateProductSoldCount;
+use App\Models\Product;
+use App\Models\ProductSku;
+use App\Observers\ProductObserver;
+use App\Observers\ProductSkuObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,10 +25,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
+        Registered::class    => [
             SendEmailVerificationNotification::class,
         ],
-        OrderPaid::class => [
+        OrderPaid::class     => [
             UpdateProductSoldCount::class,
             SendOrderPaidMail::class,
             UpdateCrowdfundingProductProgress::class,
@@ -41,6 +45,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Product::observe(ProductObserver::class);
+        ProductSku::observe(ProductSkuObserver::class);
     }
 }
