@@ -8,8 +8,10 @@ use App\Listeners\SendOrderPaidMail;
 use App\Listeners\UpdateCrowdfundingProductProgress;
 use App\Listeners\UpdateProductRating;
 use App\Listeners\UpdateProductSoldCount;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductSku;
+use App\Observers\OrderObserver;
 use App\Observers\ProductObserver;
 use App\Observers\ProductSkuObserver;
 use Illuminate\Auth\Events\Registered;
@@ -47,5 +49,6 @@ class EventServiceProvider extends ServiceProvider
     {
         Product::observe(ProductObserver::class);
         ProductSku::observe(ProductSkuObserver::class);
+        Order::observe(OrderObserver::class);
     }
 }

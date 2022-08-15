@@ -37,6 +37,14 @@ class Order extends Model
         self::REFUND_STATUS_FAILED     => '退款失败',
     ];
 
+    public static $refundStatus = [
+        self::REFUND_STATUS_PENDING    => '未退款',
+        self::REFUND_STATUS_APPLIED    => '已申请退款',
+        self::REFUND_STATUS_PROCESSING => '退款中',
+        self::REFUND_STATUS_SUCCESS    => '同意退款',
+        self::REFUND_STATUS_FAILED     => '不同意退款',
+    ];
+
     public static $shipStatusMap = [
         self::SHIP_STATUS_PENDING   => '未发货',
         self::SHIP_STATUS_DELIVERED => '已发货',
