@@ -2,37 +2,29 @@
 
 namespace App\Nova;
 
-use App\Models\Category;
-use AwesomeNova\Filters\DependentFilter;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Image;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Password;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 
-class CrowdfundingProducts extends Resource
+class AdminUser extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\CrowdfundingProduct::class;
-
-    public static $group = '商品管理';
+    public static $model = \App\Models\AdminUser::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = '普通管理';
+    public static $title = 'username';
+
+    public static $group = '系统管理';
 
     /**
      * The columns that should be searched.
@@ -40,11 +32,11 @@ class CrowdfundingProducts extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'title',
+        'username', 'name',
     ];
 
     public static function label() {
-        return '众筹配置';
+        return '管理员';
     }
 
     /**
@@ -58,9 +50,15 @@ class CrowdfundingProducts extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('目标金额', 'target_amount')->rules('required'),
-            Text::make('金额', 'total_amount'),
-            Date::make('结束时间', 'end_at')->rules('required'),
+            Gravatar::make()->maxWidth(50),
+
+            Text::make('用户名','username')
+                ->sortable()
+                ->rules('required', 'max:255'),
+
+            Text::make('角色','name')
+                ->sortable()
+                ->rules('required', 'max:254'),
         ];
     }
 
@@ -83,8 +81,7 @@ class CrowdfundingProducts extends Resource
      */
     public function filters(Request $request)
     {
-        return [
-        ];
+        return [];
     }
 
     /**

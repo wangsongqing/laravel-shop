@@ -2,37 +2,35 @@
 
 namespace App\Nova;
 
-use App\Models\Category;
-use AwesomeNova\Filters\DependentFilter;
+use App\Models\AdminPermission;
+use App\Models\AdminRolePermission;
+use App\Permission;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Image;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
-
-class CrowdfundingProducts extends Resource
+use Vyuldashev\NovaPermission\PermissionBooleanGroup;
+use Vyuldashev\NovaPermission\Role;
+use Vyuldashev\NovaMoneyField\Money;
+class AdminRole extends Role
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\CrowdfundingProduct::class;
-
-    public static $group = '商品管理';
+    public static $model = \App\Models\AdminRole::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = '普通管理';
+    public static $title = 'username';
+
+    public static $group = '系统管理';
 
     /**
      * The columns that should be searched.
@@ -40,11 +38,11 @@ class CrowdfundingProducts extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'title',
+        'username', 'name',
     ];
 
     public static function label() {
-        return '众筹配置';
+        return '角色';
     }
 
     /**
@@ -58,9 +56,15 @@ class CrowdfundingProducts extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('目标金额', 'target_amount')->rules('required'),
-            Text::make('金额', 'total_amount'),
-            Date::make('结束时间', 'end_at')->rules('required'),
+            Text::make('名称', 'name')
+                ->rules(['required', 'string', 'max:255']),
+
+            Select::make('权限', function ($model) {
+                $roleId = AdminRolePermission::query()->where('role_id', $model->id)->get()->toArray();
+                $arr = array_column($roleId, 'permission_id');
+                $per = AdminPermission::query()->whereIn('id', $arr)->get()->toArray();
+                return implode(',' ,array_column($per, 'name'));
+            })
         ];
     }
 
@@ -83,8 +87,7 @@ class CrowdfundingProducts extends Resource
      */
     public function filters(Request $request)
     {
-        return [
-        ];
+        return [];
     }
 
     /**

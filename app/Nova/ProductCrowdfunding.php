@@ -81,8 +81,8 @@ class ProductCrowdfunding extends Resource
                 ->options(\App\Models\Product::ON_SALE)
                 ->displayUsingLabels(),
 
-            Number::make('价格', 'price'),
-            Image::make('封面图片', 'image'),
+            // Number::make('目标金额', 'price'),
+            Image::make('封面图片', 'image')->rules('required'),
             HasOne::make('众筹信息', 'crowdfunding', 'App\Nova\CrowdfundingProducts'),
             HasMany::make('商品sku', 'skus', 'App\Nova\ProductSku'),
             HasMany::make('商品属性', 'properties', 'App\Nova\ProductProperties')
